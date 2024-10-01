@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: github-push-sensor
+spec:
+  eventSources:
+    github:
+      webhook:
+        endpoint: /github
+        method: POST
+        events:
+          - push  # Listen for push events
+  triggers:
+    - template:
+        name: github-push-trigger
+        parameters:
+          - src:
+              path: spec.eventSources.github.push.body.ref
+              name: branch
+        # Reference the workflow template to be triggered - github-push-workflow
+        workflow:
+          name: github-push-workflow

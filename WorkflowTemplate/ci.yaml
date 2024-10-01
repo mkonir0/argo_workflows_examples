@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: workflow-of-workflows-
+spec:
+  entrypoint: main
+  templates:
+    - name: main
+      steps:
+        - - name: workflow1
+            template: ci-workflow
+            arguments:
+              parameters:
+                - name: workflowtemplate
+                  value: "tests-workflow-template"
+
+    - name: ci-workflow
+      inputs:
+        parameters:
+          - name: workflowtemplate
+      resource:
+        action: create
+        manifest: |
+          apiVersion: argoproj.io/v1alpha1
+          kind: Workflow
+          metadata:
+            generateName: workflow-of-workflows-1-
+          spec:
+            workflowTemplateRef:
+              name: {{inputs.parameters.workflowtemplate}}
+
+    - name: ci
+      inputs:
+        parameters:
+          - name: workflowtemplate
+      container:
+        image: alpine:3.7
+        command: [sh, -c]
+        args: [ "echo 'Printing received data:' && echo '{{inputs.parameters.workflowtemplate}}'" ]

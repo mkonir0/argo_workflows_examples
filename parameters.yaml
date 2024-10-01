@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: parameter-passing-
+spec:
+  entrypoint: parameter-passing
+  arguments:
+    parameters:
+      - name: team
+        value: "Default team"
+  templates:
+    - name: parameter-passing
+      steps:
+        - - name: print-parameters
+            template: print-parameters
+            arguments:
+              parameters:
+                - name: version
+                  value: "2"
+
+    - name: print-parameters
+      inputs:
+        parameters:
+          - name: version
+      container:
+        image: alpine:3.7
+        command: [ sh, -c ]
+        args: [ "echo 'Version:{{inputs.parameters.version}}' && echo 'Team:{{workflow.parameters.team}}'" ]

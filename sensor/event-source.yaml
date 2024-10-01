@@ -1,0 +1,12 @@
+apiVersion: argoproj.io/v1alpha1
+kind: EventSource
+metadata:
+  name: github-events
+spec:
+  github:
+    webhook:
+      endpoint: /github
+      method: POST
+      events:
+        - push
+      repository: test-repo

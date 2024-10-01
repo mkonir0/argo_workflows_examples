@@ -1,0 +1,14 @@
+apiVersion: argoproj.io/v1alpha1
+kind: CronWorkflow
+metadata:
+  name: simple-cron
+spec:
+  schedule: "0 * * * *"  # Spustí se na začátku každé hodiny
+  workflowSpec:
+    entrypoint: simple
+    templates:
+      - name: simple
+        container:
+          image: busybox
+          command: [ echo ]
+          args: [ "Hello World" ]

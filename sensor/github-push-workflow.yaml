@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: github-push-workflow-
+spec:
+  entrypoint: process-push-event
+  templates:
+    - name: process-push-event
+      inputs:
+        parameters:
+          - name: branch
+      container:
+        image: alpine:3.12
+        command: [sh, -c]
+        args:
+          - |
+            echo "Processing push event on branch: {{inputs.parameters.branch}}"

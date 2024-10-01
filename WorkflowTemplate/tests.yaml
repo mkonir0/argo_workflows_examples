@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: tests-workflow-template
+spec:
+  entrypoint: tests-template
+  templates:
+    - name: tests-template
+      steps:
+        - - name: execute-tests
+            template: execute-tests
+
+    - name: execute-tests
+      container:
+        image: alpine:3.7
+        command: [ sh, -c ]
+        args: [ "echo 'build app'" ]

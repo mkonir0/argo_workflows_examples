@@ -1,0 +1,60 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: template-types-
+  labels:
+    workflows.argoproj.io/archive-strategy: "false"
+  annotations:
+    workflows.argoproj.io/description: |
+      This is a template-types workflow
+spec:
+  entrypoint: template-types
+  templates:
+    - name: template-types
+      steps:
+        - - name: container-template
+            template: container-template
+        - - name: script-template
+            template: script-template
+        - - name: http-template
+            template: http-template
+        - - name: resource-template
+            template: resource-template
+
+
+    - name: container-template
+      container:
+        image: alpine:3.7
+        command: [ sh, -c ]
+        args: [ "echo 'This is Task 2' && sleep 2" ]
+
+    - name: script-template
+      script:
+        image: python:3.7
+        command: [ python ]
+        source: |
+          print("Hello, World!")
+
+    - name: http-template
+      http:
+        url: https://jsonplaceholder.typicode.com/posts/1
+        method: GET
+      outputs:
+        parameters:
+          - name: response
+            value: "{{http.get.body}}"
+
+    - name: resource-template
+      retryStrategy:
+        limit: "10"
+      resource:
+        action: create
+        manifest: |
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: example-config
+          data:
+            key1: value1
+            key2: value2
+          

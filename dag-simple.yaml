@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: dag-example-
+spec:
+  entrypoint: dag-example
+  templates:
+    - name: dag-example
+      dag:
+        tasks:
+          - name: task1
+            template: task1
+          - name: task2
+            template: task2
+            dependencies: [ task1 ]
+          - name: task3
+            template: task3
+            dependencies: [ task1 ]
+
+    - name: task1
+      container:
+        image: alpine:3.7
+        command: [ sh, -c ]
+        args: [ "echo 'This is Task 1' && sleep 2" ]
+
+    - name: task2
+      container:
+        image: alpine:3.7
+        command: [ sh, -c ]
+        args: [ "echo 'This is Task 2' && sleep 2" ]
+
+    - name: task3
+      container:
+        image: alpine:3.7
+        command: [ sh, -c ]
+        args: [ "echo 'This is Task 3' && sleep 2" ]

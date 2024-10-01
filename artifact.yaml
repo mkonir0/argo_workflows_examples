@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: artifact-passing-example-
+spec:
+  entrypoint: artifact-passing-workflow
+  templates:
+    - name: artifact-passing-workflow
+      steps:
+        - - name: generate-data
+            template: generate-data
+        - - name: print-data
+            template: print-data
+            arguments:
+              artifacts:
+                - name: received-data
+                  from: "{{steps.generate-data.outputs.artifacts.generated-data}}"
+
+    - name: generate-data
+      container:
+        image: alpine:3.7
+        command: [sh, -c]
+        args: [ "echo 'generating data...' && sleep 2 && echo 'Data generated successfully.' > /tmp/data.txt" ]
+      outputs:
+        artifacts:
+          - name: generated-data
+            path: /tmp/data.txt
+
+    - name: print-data
+      inputs:
+        artifacts:
+          - name: received-data
+            path: /tmp/data.txt
+      container:
+        image: alpine:3.7
+        command: [sh, -c]
+        args: [ "echo 'Printing received data:' && cat /tmp/data.txt" ]
