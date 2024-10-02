@@ -15,7 +15,7 @@ argo get hello-world-xxx -n argo                            # get info about a s
 argo logs hello-world-xxx -n argo                           # print the logs from a workflow
 argo delete hello-world-xxx -n argo                         # delete workflow
 
-argo template create # create template resource
+argo template create slack.yaml -n argo # create template resource
 ```
 
 --- it's also possible to use kubectl to update resources ( argo is just a CRD ), but argo cli executes that for you
